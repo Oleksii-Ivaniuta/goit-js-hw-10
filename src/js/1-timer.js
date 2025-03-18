@@ -82,7 +82,6 @@ function startTimer() {
   else {
     clearInterval(timerInt);
     dateInput.disabled = false;
-    buttonStart.disabled = false;
   }
   }, 1000)
 };
