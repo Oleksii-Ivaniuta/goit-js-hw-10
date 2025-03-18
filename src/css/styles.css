@@ -55,6 +55,7 @@ a {
   border: 1px solid #808080;
   margin-bottom: 32px;
   margin-left: 24px;
+  margin-right: 8px;
 }
 .timer-input:hover {
   border: 1px solid #2e2f42;
