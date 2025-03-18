@@ -32,7 +32,10 @@ weekdays: {
   }
   },
   onClose(selectedDates) {
-      userSelectedDate = getDate.selectedDates[0].getTime();
+    if (selectedDates[0].getTime() > Date.now()) {
+      return userSelectedDate = selectedDates[0].getTime();
+    }
+    return
   },
 };
 
