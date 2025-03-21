@@ -32,15 +32,7 @@ weekdays: {
   }
   },
   onClose(selectedDates) {
-    if (selectedDates[0].getTime() > Date.now()) {
-      return userSelectedDate = selectedDates[0].getTime();
-    }
-    return
-  },
-};
-
-dateInput.addEventListener("input", () => {
-  if (getDate.selectedDates[0] < Date.now()) {
+      if (selectedDates[0] < Date.now()) {
     buttonStart.disabled = true;
         iziToast.error({
   message: "Please choose a date in the future",
@@ -61,29 +53,36 @@ dateInput.addEventListener("input", () => {
   else {
     buttonStart.disabled = false;
     iziToast.destroy();
+    return userSelectedDate = selectedDates[0].getTime();
   }
-})
+  },
+};
 
 buttonStart.addEventListener("click", startTimer);
 
 
 function startTimer() {
-  const timerInt = setInterval(() => {
   if (userSelectedDate > Date.now()) {
     buttonStart.disabled = true;
     dateInput.disabled = true;
-    const timeRemainingUnix = userSelectedDate - Date.now();
-    const timeRemaining = convertMs(timeRemainingUnix);
-    days.textContent = timeRemaining.days;
-    hours.textContent = timeRemaining.hours;
-    minutes.textContent = timeRemaining.minutes;
-    seconds.textContent = timeRemaining.seconds;
+    const timerInt = setInterval(() => {
+      const timeRemainingUnix = userSelectedDate - Date.now();
+      if (timeRemainingUnix <= 0) {
+        clearInterval(timerInt);
+        dateInput.disabled = false;
+        return
+      }
+      const timeRemaining = convertMs(timeRemainingUnix);
+      days.textContent = timeRemaining.days;
+      hours.textContent = timeRemaining.hours;
+      minutes.textContent = timeRemaining.minutes;
+      seconds.textContent = timeRemaining.seconds;
+    }
+  , 1000)
   }
   else {
-    clearInterval(timerInt);
-    dateInput.disabled = false;
+    return
   }
-  }, 1000)
 };
 
 const getDate = new flatpickr(dateInput, options);
