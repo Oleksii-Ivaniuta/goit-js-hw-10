@@ -24,13 +24,27 @@ const fulfilled = document.querySelector('[value="fulfilled"]');
 const rejected = document.querySelector('[value="rejected"]');
 const btnCreate = document.querySelector("button");
 btnCreate.classList.add("task2-create-btn", "button");
+
+
+
 const promiseParams = {
     delay: "",
     state: null,
 };
+
 input.addEventListener("input", () => {
-    promiseParams.delay = input.value;
+    if (input.value < 0) {
+        iziToast.warning({
+            title: 'Caution',
+            message: `Please enter a valid delay value`,
+            position: 'topCenter',
+        });
+        promiseParams.delay = "";
+        return
+    }
+        promiseParams.delay = input.value;
 });
+
 btnCreate.addEventListener("click", (event) => {
     event.preventDefault();
     if (fulfilled.checked && promiseParams.delay !== "") {
@@ -49,13 +63,13 @@ btnCreate.addEventListener("click", (event) => {
     }
     makePromise(promiseParams).then(value => iziToast.success({
           title: 'OK',
-        message: value,
+        message: `Fulfilled promise in ${value}ms`,
         position: 'topCenter',
         timeout: 20000,
     })).catch(error => iziToast.error({
       
         title: 'Error',
-    message: error,
+    message: `Rejected promise in ${error}ms`,
     position: 'topCenter',
     timeout: 20000,
 }));
@@ -65,10 +79,10 @@ function makePromise({ delay, state }) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             if (state) {
-                resolve(`Fulfilled promise in ${delay}ms`);
+                resolve(delay);
             }
             else {
-                reject(`Rejected promise in ${delay}ms`);
+                reject(delay);
             }
         }, delay)
     })
