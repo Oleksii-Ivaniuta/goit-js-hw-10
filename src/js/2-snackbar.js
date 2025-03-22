@@ -33,7 +33,7 @@ const promiseParams = {
 };
 
 input.addEventListener("input", () => {
-    if (input.value < 0) {
+    if ((isNaN(input.value) || Number(input.value) < 0)) {
         iziToast.warning({
             title: 'Caution',
             message: `Please enter a valid delay value`,
@@ -42,7 +42,7 @@ input.addEventListener("input", () => {
         promiseParams.delay = "";
         return
     }
-        promiseParams.delay = input.value;
+        promiseParams.delay = Number(input.value);
 });
 
 btnCreate.addEventListener("click", (event) => {
@@ -87,4 +87,3 @@ function makePromise({ delay, state }) {
         }, delay)
     })
 }
-
