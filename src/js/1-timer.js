@@ -10,7 +10,7 @@ import "flatpickr/dist/flatpickr.min.css";
 let userSelectedDate = null;
 const dateInput = document.querySelector("#datetime-picker");
 dateInput.classList.add("timer-input")
-const buttonStart = document.querySelector("button");
+const buttonStart = document.querySelector("button[data-start]");
 buttonStart.classList.add("button-start");
 const days = document.querySelector("[data-days]");
 const hours = document.querySelector("[data-hours]");
@@ -24,15 +24,8 @@ const options = {
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-   locale: {
-    firstDayOfWeek: 1,
-weekdays: {
-    shorthand: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
-    longhand: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-  }
-  },
   onClose(selectedDates) {
-      if (selectedDates[0] < Date.now()) {
+      if (selectedDates[0].getTime() <= Date.now()) {
     buttonStart.disabled = true;
         iziToast.error({
   message: "Please choose a date in the future",
@@ -48,7 +41,7 @@ weekdays: {
   transitionIn: "fadeIn",
   transitionOut: "fadeOut"
 });;
-    return
+        return;
   }
   else {
     buttonStart.disabled = false;
@@ -59,18 +52,18 @@ weekdays: {
 };
 
 buttonStart.addEventListener("click", startTimer);
-
+let timerInt = null;
 
 function startTimer() {
   if (userSelectedDate > Date.now()) {
     buttonStart.disabled = true;
     dateInput.disabled = true;
-    const timerInt = setInterval(() => {
+    timerInt = setInterval(() => {
       const timeRemainingUnix = userSelectedDate - Date.now();
       if (timeRemainingUnix <= 0) {
         clearInterval(timerInt);
         dateInput.disabled = false;
-        return
+        return;
       }
       const timeRemaining = convertMs(timeRemainingUnix);
       days.textContent = timeRemaining.days;
@@ -78,10 +71,16 @@ function startTimer() {
       minutes.textContent = timeRemaining.minutes;
       seconds.textContent = timeRemaining.seconds;
     }
-  , 1000)
+      , 1000);
   }
   else {
-    return
+      clearInterval(timerInt);
+    dateInput.disabled = false;
+    days.textContent = "00";
+hours.textContent = "00";
+minutes.textContent = "00";
+seconds.textContent = "00";
+  return;
   }
 };
 
@@ -102,7 +101,10 @@ function convertMs(ms) {
   const minutes = Math.floor(((ms % day) % hour) / minute);
   // Remaining seconds
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
-
-  return { days: String(days).padStart(2, "0"), hours: String(hours).padStart(2, "0"), minutes: String(minutes).padStart(2, "0"), seconds: String(seconds).padStart(2, "0") };
+// returning remaining time using function addLeadingZero to make XX format of value
+  return { days: addLeadingZero(days), hours: addLeadingZero(hours), minutes: addLeadingZero(minutes), seconds: addLeadingZero(seconds) };
 }
 
+function addLeadingZero(value) {
+  return value = String(value).padStart(2, "0");
+}
